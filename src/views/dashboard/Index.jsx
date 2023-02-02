@@ -12,13 +12,13 @@ import BulananPanel from "./components/BulananPanel";
 import HarianPanel from "./components/HarianPanel";
 import TahunanPanel from "./components/TahunanPanel";
 import {useDashboard} from '../../hooks/useDashboard';
-const { ipcRenderer  } = window.require('electron')
+// const { ipcRenderer  } = window.require('electron')
 
 function Index() {
   
   const {data:dashboard} = useDashboard();
   useEffect(() => {
-    ipcRenderer.send('test','hello world')
+    // ipcRenderer.send('test','hello world')
   },[])
   return (
     <div className="grid grid-cols-12 gap-6">
