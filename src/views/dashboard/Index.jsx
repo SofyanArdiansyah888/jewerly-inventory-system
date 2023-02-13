@@ -1,25 +1,19 @@
 import {
-  Lucide,
   Tab,
   TabGroup,
-  TabList,
-  TabPanel,
-  TabPanels,
-  Tippy,
+  TabList, TabPanels
 } from "@/base-components";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import useAlert from '../../hooks/useAlert';
+import { useDashboard } from '../../hooks/useDashboard';
 import BulananPanel from "./components/BulananPanel";
 import HarianPanel from "./components/HarianPanel";
 import TahunanPanel from "./components/TahunanPanel";
-import {useDashboard} from '../../hooks/useDashboard';
-// const { ipcRenderer  } = window.require('electron')
+
 
 function Index() {
-  
   const {data:dashboard} = useDashboard();
-  useEffect(() => {
-    // ipcRenderer.send('test','hello world')
-  },[])
+
   return (
     <div className="grid grid-cols-12 gap-6">
       <div className="col-span-12 mt-8">

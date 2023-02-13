@@ -1,6 +1,6 @@
 import { TomSelect } from "@/base-components";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
@@ -8,6 +8,8 @@ import { useBoxes } from "../../../hooks/useBox";
 import { useProducts } from "../../../hooks/useProduct";
 import { useRegisterProductItem } from "../../../hooks/useProductItem";
 import { useTalangs } from "../../../hooks/useTalang";
+import useAlert from "../../../hooks/useAlert";
+const { ipcRenderer  } = window.require('electron');
 
 function RegistrasiProduk() {
   const [tujuan, setTujuan] = useState("talang");
@@ -15,7 +17,10 @@ function RegistrasiProduk() {
   const { data: products } = useProducts();
   const { data: talangs } = useTalangs();
   const { data: boxes } = useBoxes();
-  const { mutate: registerProduk, isLoading: registerLoading } = useRegisterProductItem(() => {
+
+  const { mutate: registerProduk, 
+          isLoading: registerLoading 
+        } = useRegisterProductItem(() => {
     reset();
     setTujuan("talang");
   });
@@ -46,6 +51,25 @@ function RegistrasiProduk() {
     mode: "onChange",
     resolver: yupResolver(schema),
   });
+
+
+  const { setAlert } = useAlert();
+  useEffect(() => {
+    ipcRenderer.send('net-open');
+
+    ipcRenderer.on('net-data',(_,data) => {
+        console.log(data,'net-data')
+    });
+
+    ipcRenderer.on('net-status',(_,data) => {
+      if(!data){
+        setAlert('Scanner Not Detected !','error')
+      }
+    });
+
+    () => ipcRenderer.on('net-close');
+    
+  },[])
 
   function handleRegisterProduk(data) {
     let { id_talang, id_box, ...temp } = data;
@@ -102,8 +126,8 @@ function RegistrasiProduk() {
                 render={({ field }) => (
                   <TomSelect {...field} className="w-full">
                     <option value="">Pilih Produk</option>
-                    {products?.map((product) => (
-                      <option value={product.id}>{product.nama_produk}</option>
+                    {products?.map((product, index) => (
+                      <option value={product.id} key={index}>{product.nama_produk}</option>
                     ))}
                   </TomSelect>
                 )}
