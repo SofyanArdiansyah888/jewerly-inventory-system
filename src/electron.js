@@ -6,7 +6,7 @@ const remote = require("@electron/remote/main");
 require("@electron/remote/main").initialize();
 
 
-
+let isOpen = false;
 function createWindow() {
   const win = new BrowserWindow({
     width: 800,
@@ -27,11 +27,16 @@ function createWindow() {
   
   ipcMain.on("net-open", (event, data) => {
     
-    checkSocketStatus('192.168.1.192',6002)
-    .then((result) => {
-      event.sender.send('net-status',result)
-    })
-    .catch((err) => event.sender.send('net-status',err))
+    setTimeout(() => {
+      checkSocketStatus('192.168.1.192',6002)
+      .then((result) => {
+        event.sender.send('net-status',result)
+      })
+      .catch((err) => {
+        event.sender.send('net-status',err);
+      })
+    },1000)
+    
     
     
 
@@ -44,7 +49,7 @@ function createWindow() {
      })
   })
 
-  ipcMain.on('net-close', () => client.end())
+  ipcMain.on('net-close', () => client.destroy())
 
   
 }
@@ -75,19 +80,31 @@ const client = new Socket();
 function checkSocketStatus(host, port) {
   return new Promise((resolve, reject) => {
   
-    client.on('connect', () => {
+    client.once('connect', () => {
+      isOpen = true;
       resolve(true);
     });
 
-    client.on('error', () => {
+    client.once('error', (err) => {
+      isOpen = false;
       reject(false);
     });
-    try {
+    // try {
+      if(!isOpen)
       client.connect(port, host);  
-    } catch (error) {
-      reject(false)
-    }
+    // } catch (error) {
+    //   reject(false)
+    // }
     
     
   });
+}
+
+function splitString(str) {
+  let result = [];
+  for (let i = 0; i < str.length; i += 36) {
+    result.push(str.substring(i, i + 36));
+  }
+  const distinct = [...new Set(result)]
+  return distinct;
 }

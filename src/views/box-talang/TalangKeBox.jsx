@@ -8,6 +8,7 @@ import { useBoxes } from "../../hooks/useBox";
 import { useTalangKeBox } from "../../hooks/useBoxTalang";
 import { useProducts } from "../../hooks/useProduct";
 import { useProductItem } from "../../hooks/useProductItem";
+import useScanner from "../../hooks/useScanner";
 import { useTalangs } from "../../hooks/useTalang";
 
 const schema = yup
@@ -40,6 +41,14 @@ function TalangKeBox() {
     mode: "onChange",
     resolver: yupResolver(schema),
   });
+
+  const rfids = useScanner();
+  useEffect(() => {
+         if(rfids && rfids.length > 0){
+          rfids.reverse();
+          setValue('rfid',rfids[0])
+        }
+  },[rfids])
 
   const rfidField = watch("rfid");
   const {

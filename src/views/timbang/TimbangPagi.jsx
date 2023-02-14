@@ -2,7 +2,7 @@ import {
   Lucide, Modal,
   ModalBody, SkeletonTable, TomSelect
 } from "@/base-components";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Controller } from "react-hook-form";
 
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -11,21 +11,35 @@ import * as yup from "yup";
 import { useProductItems } from "../../hooks/useProductItem";
 import { useTalangs } from "../../hooks/useTalang";
 import { useSimpanTimbang } from "../../hooks/useTimbang";
-import { Link } from "react-router-dom";
+import useScanner from "../../hooks/useScanner";
 
 function TimbangPagi() {
   const [tags, setTags] = useState([
-    {
-      rfid: "122",
-      nama_produk: "produk Test",
-      berat: 5,
-    },
-    {
-      rfid: "12",
-      nama_produk: "produk Test",
-      berat: 5,
-    },
+    // {
+    //   rfid: "122",
+    //   nama_produk: "produk Test",
+    //   berat: 5,
+    // },
+    // {
+    //   rfid: "12",
+    //   nama_produk: "produk Test",
+    //   berat: 5,
+    // },
   ]);
+
+  const rfids = useScanner();
+  useEffect (() => {
+         if(rfids && rfids.length > 0){
+          const tempTags = [...tags,{
+            rfid: rfids[0],
+            nama_produk:'',
+            berat:0
+          }]
+          console.log(tempTags,'tempTags')
+          const newTags = [...new Set(tempTags)]
+          console.log(newTags, 'newTags')          
+        }
+  },[rfids])
 
   const [talangModal, setTalangModal] = useState(false);
 

@@ -1,15 +1,15 @@
 import { TomSelect } from "@/base-components";
 
-import { useEffect, useState } from "react";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
 import { useBoxes } from "../../../hooks/useBox";
 import { useProducts } from "../../../hooks/useProduct";
 import { useRegisterProductItem } from "../../../hooks/useProductItem";
+import useScanner from "../../../hooks/useScanner";
 import { useTalangs } from "../../../hooks/useTalang";
-import useAlert from "../../../hooks/useAlert";
-const { ipcRenderer  } = window.require('electron');
+
 
 function RegistrasiProduk() {
   const [tujuan, setTujuan] = useState("talang");
@@ -46,30 +46,21 @@ function RegistrasiProduk() {
     handleSubmit,
     reset,
     register,
+    setValue,
     formState: { errors },
   } = useForm({
     mode: "onChange",
     resolver: yupResolver(schema),
   });
 
-
-  const { setAlert } = useAlert();
+  const rfids = useScanner();
   useEffect(() => {
-    ipcRenderer.send('net-open');
+         if(rfids && rfids.length > 0){
+          rfids.reverse();
+          setValue('rfid',rfids[0])
+        }
+  },[rfids])
 
-    ipcRenderer.on('net-data',(_,data) => {
-        console.log(data,'net-data')
-    });
-
-    ipcRenderer.on('net-status',(_,data) => {
-      if(!data){
-        setAlert('Scanner Not Detected !','error')
-      }
-    });
-
-    () => ipcRenderer.on('net-close');
-    
-  },[])
 
   function handleRegisterProduk(data) {
     let { id_talang, id_box, ...temp } = data;
