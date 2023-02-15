@@ -14,18 +14,7 @@ import { useSimpanTimbang } from "../../hooks/useTimbang";
 import useScanner from "../../hooks/useScanner";
 
 function TimbangPagi() {
-  const [tags, setTags] = useState([
-    // {
-    //   rfid: "122",
-    //   nama_produk: "produk Test",
-    //   berat: 5,
-    // },
-    // {
-    //   rfid: "12",
-    //   nama_produk: "produk Test",
-    //   berat: 5,
-    // },
-  ]);
+  const [tags, setTags] = useState([]);
 
   const rfids = useScanner();
   useEffect (() => {
@@ -35,9 +24,8 @@ function TimbangPagi() {
             nama_produk:'',
             berat:0
           }]
-          console.log(tempTags,'tempTags')
           const newTags = [...new Set(tempTags)]
-          console.log(newTags, 'newTags')          
+          setTags(newTags)        
         }
   },[rfids])
 

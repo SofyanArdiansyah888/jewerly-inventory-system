@@ -2,30 +2,31 @@ import {
   Lucide, Modal,
   ModalBody, SkeletonTable, TomSelect
 } from "@/base-components";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Controller } from "react-hook-form";
 
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { useProductItems } from "../../hooks/useProductItem";
+import useScanner from "../../hooks/useScanner";
 import { useTalangs } from "../../hooks/useTalang";
 import { useSimpanTimbang } from "../../hooks/useTimbang";
-import { Link } from "react-router-dom";
 
 function TimbangSore() {
-  const [tags, setTags] = useState([
-    {
-      rfid: "122",
-      nama_produk: "produk Test",
-      berat: 5,
-    },
-    {
-      rfid: "12",
-      nama_produk: "produk Test",
-      berat: 5,
-    },
-  ]);
+  const [tags, setTags] = useState([]);
+  const rfids = useScanner();
+  useEffect (() => {
+         if(rfids && rfids.length > 0){
+          const tempTags = [...tags,{
+            rfid: rfids[0],
+            nama_produk:'',
+            berat:0
+          }]
+          const newTags = [...new Set(tempTags)]
+          setTags(newTags)        
+        }
+  },[rfids])
 
   const [talangModal, setTalangModal] = useState(false);
 
